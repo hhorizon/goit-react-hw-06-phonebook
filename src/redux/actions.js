@@ -1,11 +1,9 @@
-import actionTypes from "./types";
+import { createAction } from "@reduxjs/toolkit";
 
-export const Increment = (value) => ({
-  type: actionTypes.INCREMENT,
-  payload: value,
-});
+const addContact = createAction("contacts/addContact");
 
-export const Decrement = (value) => ({
-  type: actionTypes.DECREMENT,
-  payload: value,
-});
+const deleteContact = createAction("contacts/deleteContact");
+
+const changeFilter = createAction("contacts/changeFilter");
+
+export { addContact, deleteContact, changeFilter };

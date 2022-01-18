@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { nanoid } from "nanoid";
+import * as actions from "../../redux/actions";
+import { getItems } from "../../redux/selectors";
 import {
   StyledForm,
   StyledLabel,
@@ -6,9 +10,11 @@ import {
   StyledButton,
 } from "./ContactForm.style";
 
-function ContactForm({ onSubmit }) {
+export default function ContactForm() {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
+  const contacts = useSelector(getItems);
+  const dispatch = useDispatch();
 
   const handleChangeInput = (event) => {
     const { name, value } = event.target;
@@ -29,7 +35,16 @@ function ContactForm({ onSubmit }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(name, number);
+
+    const newContact = { id: nanoid(5), name, number };
+
+    if (contacts.find((contact) => contact.name === name)) {
+      alert(`${name} is already in contacts.`);
+      return;
+    }
+
+    dispatch(actions.addContact(newContact));
+
     setName("");
     setNumber("");
   };
@@ -66,5 +81,3 @@ function ContactForm({ onSubmit }) {
     </StyledForm>
   );
 }
-
-export default ContactForm;

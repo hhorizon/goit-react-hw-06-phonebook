@@ -1,23 +1,38 @@
-import { createStore } from "redux";
-import actionTypes from "./types";
+import { configureStore } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import contactsReducer from "./reducer";
 
-const INITIAL_STATE = {
-  value: 0,
+const contactsPersistConfig = {
+  key: "contacts",
+  storage,
+  blacklist: ["filter"],
 };
 
-const reducer = (state = INITIAL_STATE, { type, payload }) => {
-  switch (type) {
-    case actionTypes.INCREMENT:
-      return { value: state.value + payload };
+const store = configureStore({
+  reducer: {
+    contacts: persistReducer(contactsPersistConfig, contactsReducer),
+  },
 
-    case actionTypes.DECREMENT:
-      return { value: state.value - payload };
+  devTools: process.env.NODE_ENV === "development",
 
-    default:
-      return state;
-  }
-};
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
 
-const store = createStore(reducer);
+const persistor = persistStore(store);
 
-export default store;
+export { store, persistor };
